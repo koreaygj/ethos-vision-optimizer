@@ -1,0 +1,122 @@
+# Dataset
+data/**
+
+# macOS
+.DS_Store
+.DS_store
+.AppleDouble
+.LSOverride
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Jupyter
+.ipynb_checkpoints
+
+# Training outputs
+runs/
+wandb/
+*.log
+finetune_output.log
+
+# Model files (large files)
+*.pt
+*.pth
+*.onnx
+*.tflite
+*.h5
+*.pb
+
+# Results and logs
+results/**/*.json
+results/**/*.png
+results/**/*.jpg
+*.log
+*.out
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.bak
+
+# OS generated files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# PyTorch
+*.pth.tar
+
+# TensorFlow
+*.tfevents.*
+checkpoint
+*.ckpt*
+saved_model/
+
+# ONNX Runtime
+*.ort
+
+# System files
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage reports
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
