@@ -55,14 +55,6 @@ wandb/
 *.log
 finetune_output.log
 
-# Model files (large files)
-*.pt
-*.pth
-*.onnx
-*.tflite
-*.h5
-*.pb
-
 # Results and logs
 results/**/*.json
 results/**/*.png
