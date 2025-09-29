@@ -1,0 +1,78 @@
+# NPU 최적화 YOLOv11 모델 설정
+# Target: Arm Ethos-N NPU
+# Based on: Ultralytics YOLOv11 custom.yaml
+# Optimized: 2025-09-26
+
+# Parameters
+nc: 15 # traffic sign classes (80→15)
+scales: # NPU 최적화를 위한 모델 스케일 조정
+  # [depth, width, max_channels] - NPU 메모리 제약 고려
+  n: [0.33, 0.25, 1024] # 깊이 감소 (0.50→0.33) - 레이어 수 줄임
+  s: [0.33, 0.50, 1024] # 깊이 감소 (0.50→0.33)
+  m: [0.50, 0.75, 512] # 너비 감소 (1.00→0.75) - 채널 수 줄임
+  l: [0.75, 1.00, 512] # 깊이 감소 (1.00→0.75)
+  x: [0.75, 1.25, 512] # 깊이/너비 감소 - NPU 효율성 고려
+
+# NPU 최적화 backbone
+backbone:
+  # [from, repeats, module, args]
+  - [-1, 1, Conv, [64, 3, 2]] # 0-P1/2
+  - [-1, 1, Conv, [128, 3, 2]] # 1-P2/4
+  # ✅ C3k2 → C2f로 교체 (NPU 호환성 향상)
+  - [-1, 1, C2f, [256, False]] # C3k2 → C2f (repeat 2→1)
+  - [-1, 1, Conv, [256, 3, 2]] # 3-P3/8
+  - [-1, 1, C2f, [512, False]] # C3k2 → C2f (repeat 2→1)
+  - [-1, 1, Conv, [512, 3, 2]] # 5-P4/16
+  - [-1, 1, C2f, [512, True]] # C3k2 → C2f (repeat 2→1)
+  - [-1, 1, Conv, [1024, 3, 2]] # 7-P5/32
+  - [-1, 1, C2f, [1024, True]] # C3k2 → C2f (repeat 2→1)
+  # ✅ SPPF → MaxPool 시퀀스로 교체 (NPU 호환)
+  - [-1, 1, SPPF, [1024, 5]] # 9 - 단순화 필요시 MaxPool로 교체
+  # ❌ C2PSA → CSP로 교체 (PSA는 NPU 비호환)
+  - [-1, 1, CSP, [1024]] # 10 - C2PSA → CSP
+
+# NPU 최적화 head
+head:
+  # ✅ nn.Upsample → ConvTranspose2d 교체 고려 (NPU 효율성)
+  - [-1, 1, nn.Upsample, [None, 2, "nearest"]] # 11 - 필요시 ConvTranspose2d로 교체
+  - [[-1, 6], 1, Concat, [1]] # cat backbone P4
+  - [-1, 1, C2f, [512, False]] # 13 - C3k2 → C2f (repeat 2→1)
+
+  - [-1, 1, nn.Upsample, [None, 2, "nearest"]] # 14
+  - [[-1, 4], 1, Concat, [1]] # cat backbone P3
+  - [-1, 1, C2f, [256, False]] # 16 (P3/8-small) - C3k2 → C2f
+
+  - [-1, 1, Conv, [256, 3, 2]]
+  - [[-1, 13], 1, Concat, [1]] # cat head P4
+  - [-1, 1, C2f, [512, False]] # 19 (P4/16-medium) - C3k2 → C2f
+
+  - [-1, 1, Conv, [512, 3, 2]]
+  - [[-1, 10], 1, Concat, [1]] # cat head P5
+  - [-1, 1, C2f, [1024, True]] # 22 (P5/32-large) - C3k2 → C2f
+
+  - [[16, 19, 22], 1, Detect, [nc]] # Detect(P3, P4, P5)
+
+# =======================================
+# NPU 최적화 커스텀 모듈 정의 (필요시 구현)
+# =======================================
+
+# CSP Block (C2PSA 교체용)
+CSP:
+  # CrossStagePartial 블록 - NPU 호환
+  module: CSPBlock
+  args: [c1, c2, n=1, shortcut=True, g=1, e=0.5]
+
+# Simple MaxPool (SPPF 교체용 - 옵션)
+SimpleMaxPool:
+  # 단순 MaxPool 시퀀스
+  module: nn.Sequential
+  args:
+    - [nn.MaxPool2d, [5, 1, 2]]
+    - [nn.MaxPool2d, [9, 1, 4]]
+    - [nn.MaxPool2d, [13, 1, 6]]
+
+# NPU-Friendly ConvTranspose (Upsample 교체용 - 옵션)
+NPUUpsample:
+  # ConvTranspose2d 기반 업샘플링
+  module: nn.ConvTranspose2d
+  args: [c1, c2, 2, 2]
