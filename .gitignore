@@ -55,6 +55,9 @@ wandb/
 *.log
 finetune_output.log
 
+# train model files
+train/**.pt
+
 # Results and logs
 results/**/*.json
 results/**/*.png
