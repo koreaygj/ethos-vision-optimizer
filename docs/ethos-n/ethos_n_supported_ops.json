@@ -1,0 +1,68 @@
+{
+  "supported_operators": [
+    "Add",
+    "AvgPool2d",
+    "Concat",
+    "Constant",
+    "Conv2d",
+    "DepthToSpace",
+    "DepthwiseConv2d",
+    "Linear",
+    "LeakyReLU",
+    "MaxPool2d",
+    "MeanXy",
+    "Mul",
+    "Pad",
+    "ReinterpretQuantization",
+    "ReLU",
+    "Requantize",
+    "Reshape",
+    "Resize",
+    "Sigmoid",
+    "Split",
+    "Tanh",
+    "Transpose",
+    "ConvTranspose2d"
+  ],
+  "description": "Arm® Ethos™-N NPU supported operators",
+  "npu_device": "Arm Ethos-N",
+  "version": "1.0",
+  "tensor_requirements": {
+    "datatypes": ["int8_signed", "uint8"],
+    "max_dimensions": 4,
+    "max_batch_size": 1,
+    "tensor_format": "NHWC",
+    "quantization": "per-channel supported for weights and bias only"
+  },
+  "operator_constraints": {
+    "Conv2d": {
+      "kernel_sizes": [1, 2, 3, 5, 7, 9],
+      "strides": [1, 2],
+      "padding": ["SAME", "VALID"],
+      "format": "HWIO"
+    },
+    "DepthwiseConv2d": {
+      "kernel_sizes": [1, 2, 3, 5, 7, 9],
+      "strides": [1, 2],
+      "padding": ["SAME", "VALID"],
+      "format": "HWIM",
+      "channel_multiplier": 1
+    },
+    "MaxPool2d": {
+      "supported_configs": [
+        "1x1_pool_2x2_stride",
+        "2x2_pool_2x2_stride",
+        "3x3_pool_2x2_stride",
+        "up_to_9x9_pool_1x1_stride_VALID",
+        "up_to_17x17_pool_1x1_stride_SAME"
+      ]
+    },
+    "AvgPool2d": {
+      "supported_configs": [
+        "3x3_pool_1x1_stride_SAME",
+        "7x7_mean_pool",
+        "8x8_mean_pool"
+      ]
+    }
+  }
+}
