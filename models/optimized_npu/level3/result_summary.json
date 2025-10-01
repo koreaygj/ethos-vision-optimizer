@@ -1,0 +1,19 @@
+{
+  "timestamp": "2025-09-30 02:44:37",
+  "model_path": "optimized_npu/level3_saved_model/level3_full_integer_quant.tflite",
+  "input_info": {
+    "name": "serving_default_images:0",
+    "shape": [
+      1,
+      640,
+      640,
+      3
+    ],
+    "dtype": "int8"
+  },
+  "partitioning": {
+    "enabled": true,
+    "success": true,
+    "ethos_n_functions": 45
+  }
+}

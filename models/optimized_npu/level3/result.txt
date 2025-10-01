@@ -1,0 +1,49 @@
+================================================================================
+ TVM + Ethos-N Partitioning & Compilation Report
+ Generated: 2025-09-30 02:44:37
+ Model: optimized_npu/level3_saved_model/level3_full_integer_quant.tflite
+ Ethos-N Config: n78, TOPS=4, PLE=4
+================================================================================
+
+[1/3] 모델 로딩...
+  입력 이름: serving_default_images:0
+  입력 shape: (1, 640, 640, 3)
+  데이터 타입: int8
+  ✓ 모델 로드 성공
+
+  Original IR 저장: result_original_ir.txt
+[2/3] 최적화 및 파티셔닝...
+  Ethos-N 파티셔닝 시도 중...
+  ✓ 파티셔닝 성공 (45개 함수가 Ethos-N으로 오프로드됨)
+  ✓ 최적화 완료
+
+================================================================================
+ Partitioning Statistics 
+================================================================================
+Ethos-N 함수 개수: 45
+
+주요 연산 개수:
+  - qnn.conv2d: 64
+  - qnn.add: 6
+  - qnn.concatenate: 19
+  - reshape: 28
+  - nn.max_pool2d: 3
+
+  Partitioned IR 저장: result_partitioned_ir.txt
+
+
+  JSON 요약: result_summary.json
+
+================================================================================
+[3/3] 완료!
+================================================================================
+
+결과 파일:
+  - 분석 리포트: result.txt
+  - JSON 요약: result_summary.json
+  - Original IR: result_original_ir.txt
+  - Partitioned IR: result_partitioned_ir.txt
+
+✓ 45개 함수가 Ethos-N으로 오프로드 가능
+  (실제 실행은 Ethos-N 하드웨어 또는 ARM 공식 툴체인 필요)
+
