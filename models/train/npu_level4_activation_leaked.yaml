@@ -1,0 +1,50 @@
+# NPU 최적화 Level 4: SiLU → LeakyReLU 활성화 함수 교체 (개별 지정)
+# 적용: Level 3 구조 기반, 각 레이어에 LeakyReLU 직접 명시
+# Target: Arm Ethos-N NPU (최대 호환성)
+# Updated: 2025-10-01 (활성화 함수 개별 지정 방식으로 수정)
+
+# Parameters
+nc: 80 # number of classes
+activation: nn.LeakyReLU(0.1) # @aleshem's solution from GitHub #7296 (SiLU → LeakyReLU)
+scales: # 원본 스케일 유지
+  # [depth, width, max_channels]
+  n: [0.50, 0.25, 1024]
+  s: [0.50, 0.50, 1024]
+  m: [0.50, 1.00, 512]
+  l: [1.00, 1.00, 512]
+  x: [1.00, 1.50, 512]
+
+# NPU 최적화 backbone - C3k2 → C2f, repeat 감소, LeakyReLU 활성화
+backbone:
+  # [from, repeats, module, args]
+  - [-1, 1, Conv, [64, 3, 2]]      # 0-P1/2
+  - [-1, 1, Conv, [128, 3, 2]]     # 1-P2/4
+  - [-1, 1, C2f, [256, False]]   # C3k2 → C2f, repeat 2→1
+  - [-1, 1, Conv, [256, 3, 2]]     # 3-P3/8
+  - [-1, 1, C2f, [512, False]]   # C3k2 → C2f, repeat 2→1
+  - [-1, 1, Conv, [512, 3, 2]]     # 5-P4/16
+  - [-1, 1, C2f, [512, True]]    # C3k2 → C2f, repeat 2→1
+  - [-1, 1, Conv, [1024, 3, 2]]    # 7-P5/32
+  - [-1, 1, C2f, [1024, True]]   # C3k2 → C2f, repeat 2→1
+  - [-1, 1, SPPF, [1024, 5]]     # 9 (유지)
+  - [-1, 1, C2f, [1024, True]]   # 10 - C2PSA → C2f (어텐션 제거)
+
+# NPU 최적화 head - C3k2 → C2f, repeat 감소, LeakyReLU 활성화
+head:
+  - [-1, 1, nn.Upsample, [None, 2, "nearest"]]
+  - [[-1, 6], 1, Concat, [1]] # cat backbone P4
+  - [-1, 1, C2f, [512, False]]   # 13 - C3k2 → C2f, repeat 2→1
+
+  - [-1, 1, nn.Upsample, [None, 2, "nearest"]]
+  - [[-1, 4], 1, Concat, [1]] # cat backbone P3
+  - [-1, 1, C2f, [256, False]]   # 16 (P3/8-small) - C3k2 → C2f
+
+  - [-1, 1, Conv, [256, 3, 2]]      # 17
+  - [[-1, 13], 1, Concat, [1]] # cat head P4
+  - [-1, 1, C2f, [512, False]]   # 19 (P4/16-medium) - C3k2 → C2f
+
+  - [-1, 1, Conv, [512, 3, 2]]      # 20
+  - [[-1, 10], 1, Concat, [1]] # cat head P5
+  - [-1, 1, C2f, [1024, True]]   # 22 (P5/32-large) - C3k2 → C2f
+
+  - [[16, 19, 22], 1, Detect, [nc]] # Detect(P3, P4, P5)
