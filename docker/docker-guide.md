@@ -19,6 +19,8 @@
 - **NPU 지원**: ARM Ethos-N Driver Stack
 - **개발 도구**: Python 3.9, Rust, CMake, GoogleTest
 
+해당 도커 파일은 [docker hub](https://hub.docker.com/repository/docker/koreaygj/tvm-ethosn-dev/general)에서 간단하게 설치 가능합니다.
+
 ---
 
 ## 🐳 **Dockerfile 분석: [`Dockerfile.ci-arm`](Dockerfile.ci-arm)**
