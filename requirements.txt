@@ -1,0 +1,55 @@
+# NPU 최적화 YOLO 훈련을 위한 의존성 패키지
+# Generated: 2025-09-26
+
+# Core ML/DL Framework
+torch>=2.0.0              # PyTorch - 메인 딥러닝 프레임워크
+torchvision>=0.15.0       # PyTorch 비전 라이브러리
+
+# YOLO Framework
+ultralytics>=8.0.0        # YOLOv8/v11 프레임워크 (최신 버전)
+
+# Computer Vision
+opencv-python>=4.8.0      # OpenCV - 이미지 처리
+Pillow>=9.0.0             # PIL - 이미지 로딩/저장
+
+# Data Science & Analysis
+numpy>=1.21.0             # 수치 계산
+pandas>=1.5.0             # 데이터 분석
+matplotlib>=3.5.0         # 시각화
+seaborn>=0.11.0           # 고급 시각화
+
+# Configuration & Utils
+PyYAML>=6.0               # YAML 파일 처리
+tqdm>=4.64.0              # 진행률 표시
+pathlib2>=2.3.0           # 경로 처리 (Python < 3.4용)
+
+# Optional: GPU 가속 (시스템에 따라 선택)
+# CUDA 환경용 (Linux/Windows + NVIDIA GPU)
+# torch-audio                # PyTorch 오디오 (선택적)
+
+# Apple Silicon (M1/M2) 최적화는 기본 torch에 포함됨
+# MPS 백엔드 자동 지원
+
+# Development & Debugging
+jupyter>=1.0.0            # Jupyter notebook (선택적)
+ipython>=8.0.0            # IPython (선택적)
+
+# Export & Deployment (선택적)
+onnx>=1.12.0              # ONNX 모델 변환
+onnxruntime>=1.12.0       # ONNX 런타임
+
+# Additional Training Utilities
+tensorboard>=2.10.0       # TensorBoard 로깅 (선택적)
+wandb>=0.13.0             # Weights & Biases (선택적)
+
+# System utilities
+psutil>=5.8.0             # 시스템 모니터링
+gpustat>=1.0.0            # GPU 모니터링 (NVIDIA만)
+
+# Data handling
+albumentations>=1.3.0     # 고급 데이터 증강 (선택적)
+imgaug>=0.4.0             # 이미지 증강 (선택적)
+
+# Performance profiling (선택적)
+py-spy>=0.3.14            # Python 프로파일러
+memory-profiler>=0.60.0   # 메모리 프로파일러
